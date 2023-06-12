@@ -1,0 +1,17 @@
+services:
+  minio:
+    image: minio/minio:${VERSION:-RELEASE.2023-06-09T07-32-12Z}
+    command: server /data --console-address ":9100"
+    ports:
+      - 9200:9000
+      - 9100:9100
+    volumes:
+      - minio_data:/data
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER:-admin}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-myp@ssw0rd}
+      - MINIO_BROWSER_REDIRECT_URL=${SCHEME:-https}://${DOMAIN_CONSOLE:?}
+      - MINIO_SERVER_URL=${SCHEME:-https}://${DOMAIN:-minio.localhost}
+
+volumes:
+  minio_data:
