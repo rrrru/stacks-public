@@ -1,0 +1,76 @@
+services:
+  firezone:
+    image: "firezone/firezone:0.7.30"
+    environment:
+      - VERSION=latest
+      - EXTERNAL_URL=${EXTERNAL_URL}
+      - DEFAULT_ADMIN_EMAIL=${DEFAULT_ADMIN_EMAIL}
+      - DEFAULT_ADMIN_PASSWORD=${DEFAULT_ADMIN_PASSWORD}
+      - GUARDIAN_SECRET_KEY=${GUARDIAN_SECRET_KEY}
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
+      - LIVE_VIEW_SIGNING_SALT=${LIVE_VIEW_SIGNING_SALT}
+      - COOKIE_SIGNING_SALT=${COOKIE_SIGNING_SALT}
+      - COOKIE_ENCRYPTION_SALT=${COOKIE_ENCRYPTION_SALT}
+      - DATABASE_ENCRYPTION_KEY=${DATABASE_ENCRYPTION_KEY}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+
+      - WIREGUARD_IPV4_NETWORK=${WIREGUARD_IPV4_NETWORK}
+      - WIREGUARD_IPV4_ADDRESS=${WIREGUARD_IPV4_ADDRESS}
+      - WIREGUARD_IPV6_NETWORK=${WIREGUARD_IPV6_NETWORK}
+      - WIREGUARD_IPV6_ADDRESS=${WIREGUARD_IPV6_ADDRESS}
+
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USER=${DATABASE_USER}
+
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST_NAME=${POSTGRES_HOST_NAME}
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+      - net.ipv4.ip_forward=1
+      - net.ipv6.conf.all.forwarding=1
+    ports:
+      - 51820:51820/udp
+      - 13000:13000
+    volumes:
+      - firezone_data:/var/firezone
+    networks:
+      firezone_net:
+        ipv4_address: 172.25.0.100
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+    depends_on:
+      - fzpostgres
+    restart: always
+
+  fzpostgres:
+    image: postgres:15
+    volumes:
+      - fz_postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    networks:
+      - firezone_net
+    restart: always
+
+volumes:
+  firezone_data:
+    name: firezone_data
+  fz_postgres_data:
+    name: fz_postgres_data
+
+networks:
+  firezone_net:
+    name: firezone_net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16
