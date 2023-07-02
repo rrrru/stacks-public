@@ -1,0 +1,20 @@
+services:    
+  openldap:
+    image: "osixia/openldap:1.5.0"
+    restart: always
+    environment:
+      - LDAP_ORGANISATION=${LDAP_ORGANISATION:-org01}
+      - LDAP_DOMAIN=${LDAP_DOMAIN:-example.com}
+      - LDAP_ADMIN_PASSWORD=${LDAP_ADMIN_PASSWORD:-password}
+    volumes:
+      - ldap:/var/lib/ldap
+      - slapd:/etc/ldap/slapd.d
+      - slapdcerts:/container/service/slapd/assets/certs
+    ports:
+      - 389:389
+      - 636:636
+      
+volumes:
+  ldap:
+  slapd:
+  slapdcerts:

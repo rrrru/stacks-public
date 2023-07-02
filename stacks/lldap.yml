@@ -1,0 +1,28 @@
+services:
+  lldap:
+    image: nitnelave/lldap:stable
+    ports:
+      # For LDAP
+      - "3890:3890"
+      # For LDAPS (LDAP Over SSL), enable port if LLDAP_LDAPS_OPTIONS__ENABLED set true, look env below
+      # - "6360:6360"
+      # For the web front-end
+      - "17170:17170"
+    volumes:
+      - "lldap_data:/data"
+    environment:
+      - UID=${UID:-1000}
+      - GID=${GID:-1000}
+      - TZ=${TZ}
+      - LLDAP_JWT_SECRET=${LLDAP_JWT_SECRET:-secret}
+      - LLDAP_LDAP_USER_PASS=${LLDAP_LDAP_USER_PASS:-password}
+      - LLDAP_LDAP_BASE_DN=${LLDAP_LDAP_BASE_DN:-dc=example,dc=com}
+      # If using LDAPS, set enabled true and configure cert and key path
+      # - LLDAP_LDAPS_OPTIONS__ENABLED=${LLDAP_LDAPS_OPTIONS__ENABLED:-true}
+      # - LLDAP_LDAPS_OPTIONS__CERT_FILE=${LLDAP_LDAPS_OPTIONS__CERT_FILE}
+      # - LLDAP_LDAPS_OPTIONS__KEY_FILE=${LLDAP_LDAPS_OPTIONS__KEY_FILE}
+      # You can also set a different database:
+      # - LLDAP_DATABASE_URL=${LLDAP_DATABASE_URL}
+
+volumes:
+  lldap_data:
