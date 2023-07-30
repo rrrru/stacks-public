@@ -39,12 +39,6 @@ services:
       - 13000:13000
     volumes:
       - firezone_data:/var/firezone
-    networks:
-      firezone_net:
-        ipv4_address: 172.25.0.100
-    dns:
-      - 1.1.1.1
-      - 1.0.0.1
     depends_on:
       - fzpostgres
     restart: always
@@ -57,8 +51,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-postgres}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-    networks:
-      - firezone_net
     restart: always
 
 volumes:
@@ -66,11 +58,3 @@ volumes:
     name: firezone_data
   fz_postgres_data:
     name: fz_postgres_data
-
-networks:
-  firezone_net:
-    name: firezone_net
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.25.0.0/16
