@@ -1,6 +1,6 @@
 services:
   firezone:
-    image: "firezone/firezone:0.7.30"
+    image: "firezone/firezone:latest"
     environment:
       - VERSION=latest
       - EXTERNAL_URL=${EXTERNAL_URL}
