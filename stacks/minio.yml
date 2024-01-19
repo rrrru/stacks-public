@@ -1,9 +1,9 @@
 services:
   minio:
-    image: minio/minio:${VERSION:-RELEASE.2023-06-09T07-32-12Z}
+    image: quay.io/minio/minio:${VERSION:-latest}
     command: server /data --console-address ":9100"
     ports:
-      - 9200:9000
+      - 9000:9000
       - 9100:9100
     volumes:
       - minio_data:/data
@@ -12,6 +12,10 @@ services:
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-myp@ssw0rd}
       - MINIO_BROWSER_REDIRECT_URL=${SCHEME:-https}://${DOMAIN_CONSOLE:?}
       - MINIO_SERVER_URL=${SCHEME:-https}://${DOMAIN:-minio.localhost}
-
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 volumes:
   minio_data:
