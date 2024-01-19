@@ -3,7 +3,7 @@ services:
     image: quay.io/minio/minio:${VERSION:-latest}
     command: server /data --console-address ":9100"
     ports:
-      - 9000:9000
+      - 10000:9000
       - 9100:9100
     volumes:
       - minio_data:/data
